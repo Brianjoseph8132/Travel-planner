@@ -18,7 +18,7 @@ export const UserProvider = ({ children }) => {
   // LOGIN
   const login = (email, password) => {
     toast.loading("Logging you in ...");
-    fetch("http://127.0.0.1:5000/login", {
+    fetch("https://travel-planner-vlgr.onrender.com/login", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -37,7 +37,7 @@ export const UserProvider = ({ children }) => {
 
           setAuthToken(response.access_token);
 
-          fetch("http://127.0.0.1:5000/current_user", {
+          fetch("https://travel-planner-vlgr.onrender.com/current_user", {
             method: "GET",
             headers: {
               "Content-type": "application/json",
@@ -72,7 +72,7 @@ export const UserProvider = ({ children }) => {
   const logout = () => {
 
     toast.loading("Logging you out ... ");
-    fetch("http://127.0.0.1:5000/logout", {
+    fetch("https://travel-planner-vlgr.onrender.com/logout", {
       method: "DELETE",
       headers: {
         'Content-type': 'application/json',
@@ -109,7 +109,7 @@ export const UserProvider = ({ children }) => {
   const fetchCurrentUser = () => {
     console.log("Current user fcn", authToken);
 
-    fetch("http://127.0.0.1:5000/current_user", {
+    fetch("https://travel-planner-vlgr.onrender.com/current_user", {
       method: "GET",
       headers: {
         "Content-type": "application/json",
@@ -127,7 +127,7 @@ export const UserProvider = ({ children }) => {
   // ADD User
   const addUser = (username, email, password) => {
     toast.loading("Signing up ...");
-    fetch("http://127.0.0.1:5000/users", {
+    fetch("https://travel-planner-vlgr.onrender.com/users", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -156,13 +156,13 @@ export const UserProvider = ({ children }) => {
       });
   };
 
-  // UPDATE User
+  
     // Function to update user (placeholder)
     const updateUser = async (updatedData) => {
       if (!authToken) return false;
     
       try {
-        const response = await fetch("http://127.0.0.1:5000/update_profile", {
+        const response = await fetch("https://travel-planner-vlgr.onrender.com/update_profile", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -192,7 +192,7 @@ export const UserProvider = ({ children }) => {
   const deleteUser = (userId) => {
   toast.loading("Deleting User...");
   
-  fetch(`http://127.0.0.1:5000/users/${userId}`, {
+  fetch(`https://travel-planner-vlgr.onrender.com/users/${userId}`, {
     method: "DELETE",
     headers: {
       "Content-type": "application/json",
@@ -203,19 +203,19 @@ export const UserProvider = ({ children }) => {
     .then((response) => {
       if (response.success) {
         toast.dismiss();
-        toast.success(response.success); // Success message
+        toast.success(response.success); 
         setOnChange(!onChange);
         
-        // Log out the user by clearing the auth token
-        sessionStorage.removeItem("token"); // Clear token from sessionStorage
+        
+        sessionStorage.removeItem("token"); 
         setAuthToken(null);
         setCurrentUser(null);
          
-        // Redirect to login page
+        
         navigate("/login");
       } else if (response.error) {
         toast.dismiss();
-        toast.error(response.error); // Error message
+        toast.error(response.error); 
       } else {
         toast.dismiss();
         toast.error("Failed to delete user");
@@ -223,7 +223,7 @@ export const UserProvider = ({ children }) => {
     })
     .catch((err) => {
       toast.dismiss();
-      toast.error("Error deleting user"); // Error handling in case of request failure
+      toast.error("Error deleting user"); 
       console.error("Error deleting user:", err);
     });
   };

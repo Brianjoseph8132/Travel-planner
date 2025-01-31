@@ -15,7 +15,7 @@ export const TripProvider = ({ children }) => {
 
     // =================== Activities ===================
     useEffect(() => {
-        fetch('http://127.0.0.1:5000/activities', {
+        fetch('https://travel-planner-vlgr.onrender.com/activities', {
             method: "GET",
             headers: {
                 'Content-type': 'application/json',
@@ -36,17 +36,17 @@ export const TripProvider = ({ children }) => {
         // Ensure scheduled_time is in "HH:MM" format
         const formattedTime = scheduled_time && scheduled_time.length === 5 ? scheduled_time : null;
     
-        fetch("http://127.0.0.1:5000/activities", {
+        fetch("https://travel-planner-vlgr.onrender.com/activities", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: authToken ? `Bearer ${authToken}` : "",
             },
             body: JSON.stringify({
-                trip_id: parseInt(trip_id),  // Ensure trip_id is an integer
+                trip_id: parseInt(trip_id),  
                 name,
                 description,
-                scheduled_time: formattedTime,  // Pass the formatted time
+                scheduled_time: formattedTime,  
             })
         })
         .then((resp) => resp.json())
@@ -78,8 +78,8 @@ export const TripProvider = ({ children }) => {
 
     
     const updateActivity = (id, name, description, scheduled_time) => {
-        // Your update logic here
-        fetch(`http://127.0.0.1:5000/activities/${id}`, {
+        
+        fetch(`https://travel-planner-vlgr.onrender.com/activities/${id}`, {
             method: "PUT",
             headers: {
                 "Content-type": "application/json",
@@ -96,7 +96,7 @@ export const TripProvider = ({ children }) => {
             toast.dismiss();
             if (response.success) {
                 toast.success(response.success);
-                setOnChange(!onChange); // Update state to trigger refresh
+                setOnChange(!onChange); 
             } else if (response.error) {
                 toast.error(response.error);
             } else {
@@ -127,7 +127,7 @@ export const TripProvider = ({ children }) => {
     const deleteActivity = (id) => 
         {
             toast.loading("Deleting Activity...");
-            fetch(`http://127.0.0.1:5000/activities/${id}`,{
+            fetch(`https://travel-planner-vlgr.onrender.com/activities/${id}`,{
                 method: "DELETE",
                 headers: {
                     'Content-type': 'application/json',
@@ -156,7 +156,7 @@ export const TripProvider = ({ children }) => {
     // =========================== Trips ============================
     // Fetch Trips
     useEffect(() => {
-        fetch('http://127.0.0.1:5000/trips', {
+        fetch('https://travel-planner-vlgr.onrender.com/trips', {
             method: "GET",
             headers: {
                 'Content-type': 'application/json',
@@ -174,7 +174,7 @@ export const TripProvider = ({ children }) => {
     // Add Trip
     const addTrip = (destination, start_date, end_date, budget) => {
         toast.loading("Adding trip...");
-        fetch("http://127.0.0.1:5000/trips", {
+        fetch("https://travel-planner-vlgr.onrender.com/trips", {
             method: "POST",
             headers: {
                 'Content-type': 'application/json',
@@ -206,7 +206,7 @@ export const TripProvider = ({ children }) => {
 
     const updateTrip = (id, destination, start_date, budget, end_date) => {
         
-        fetch(`http://127.0.0.1:5000/trips/${id}`, {
+        fetch(`https://travel-planner-vlgr.onrender.com/trips/${id}`, {
             method: "PUT",
             headers: {
                 "Content-type": "application/json",
@@ -246,7 +246,7 @@ export const TripProvider = ({ children }) => {
 // Delete
     const deleteTrip = (id) => {
         toast.loading("Deleting trip...");
-        fetch(`http://127.0.0.1:5000/trips/${id}`, {
+        fetch(`https://travel-planner-vlgr.onrender.com/${id}`, {
             method: "DELETE",
             headers: {
                 'Content-type': 'application/json',
