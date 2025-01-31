@@ -5,8 +5,11 @@ from datetime import datetime
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
 from flask_jwt_extended import create_access_token
+from flask_cors import CORS
+
 app = Flask(__name__)
 
+CORS(app)
 # migration initialization
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///travel.db'
 migrate = Migrate(app, db)

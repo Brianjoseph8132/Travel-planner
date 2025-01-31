@@ -32,61 +32,59 @@ def fetch_activities():
 
 
 
-
-# Add activites
+# Add
 @activity_bp.route("/activities", methods=["POST"])
 @jwt_required()
 def add_activities():
     data = request.get_json()
     current_user_id = get_jwt_identity()
 
-    # Extract and validate input fields
+    print("Received Data:", data)  # Debugging: Check incoming data
+
     name = data.get('name')
     description = data.get('description')
-    scheduled_time_str = data.get('scheduled_time')  # Assuming input is in HH:MM format
+    scheduled_time = data.get('scheduled_time')  # Expecting "HH:MM" format
     trip_id = data.get('trip_id')
 
-    if not (name and description and scheduled_time_str and trip_id):
+    if not all([name, description, scheduled_time, trip_id]):
         return jsonify({"error": "Missing required fields"}), 400
 
-    # Validate the time format (HH:MM)
+    # Ensure scheduled_time is in HH:MM format
     try:
-        scheduled_time = datetime.strptime(scheduled_time_str, '%H:%M').time()
+        # Try parsing the time to ensure it's valid
+        datetime.strptime(scheduled_time, '%H:%M')
     except ValueError:
         return jsonify({"error": "Invalid time format. Use HH:MM"}), 400
 
-    # Combine the time with the current date
-    today = datetime.now().date()  # Use today's date, or replace with a specific date if required
-    scheduled_datetime = datetime.combine(today, scheduled_time)
-
-    # Verify if the trip exists and belongs to the current user
     trip = Trip.query.get(trip_id)
     if not trip:
         return jsonify({"error": "Trip not found"}), 404
     if trip.user_id != current_user_id:
         return jsonify({"error": "Unauthorized to add activity for this trip"}), 403
 
-    # Check if an activity with this name already exists for the same trip
+    # Check if an activity with this name already exists for the trip
     check_name = Activity.query.filter_by(name=name, trip_id=trip_id).first()
     if check_name:
         return jsonify({"error": "Activity with this name already exists for this trip"}), 400
 
-    # Create the new activity with combined date and time
     new_activity = Activity(
         name=name,
         description=description,
-        trip_id=trip_id,
-        scheduled_time=scheduled_datetime
+        scheduled_time=scheduled_time,  # Store time directly as a string
+        trip_id=trip_id
     )
 
     db.session.add(new_activity)
     db.session.commit()
 
+    print("Activity added successfully!")  # Debugging
+
     return jsonify({"success": "Added successfully"}), 201
 
 
 
-# Update activities
+
+# update
 @activity_bp.route("/activities/<int:activity_id>", methods=["PUT"])
 @jwt_required()
 def update_activities(activity_id):
@@ -102,18 +100,21 @@ def update_activities(activity_id):
         data = request.get_json()
         name = data.get('name', activity.name)
         description = data.get('description', activity.description)
-        scheduled_time_str = data.get('scheduled_time', activity.scheduled_time)  # Expecting 'HH:MM' format
-        trip_id = data.get('trip_id', activity.trip_id)
+        
+        # Only update the scheduled_time if it's provided, otherwise keep the existing value
+        scheduled_time = data.get('scheduled_time', None)
+        if scheduled_time:
+            try:
+                # Ensure it's in HH:MM format and convert to time
+                scheduled_time = datetime.strptime(scheduled_time, '%H:%M').time()
+                # Convert datetime.time to string in HH:MM format
+                scheduled_time = scheduled_time.strftime('%H:%M')
+            except ValueError:
+                return jsonify({"error": "Invalid time format. Use HH:MM"}), 400
+        else:
+            scheduled_time = activity.scheduled_time  # Retain the current value if not provided
 
-        # Validate time format (HH:MM)
-        try:
-            # Ensure it's in HH:MM format
-            if scheduled_time_str and datetime.strptime(scheduled_time_str, '%H:%M'):
-                scheduled_time = scheduled_time_str
-            else:
-                scheduled_time = activity.scheduled_time
-        except ValueError:
-            return jsonify({"error": "Invalid time format. Use HH:MM"}), 400
+        trip_id = data.get('trip_id', activity.trip_id)
 
         # Check if activity name already exists
         check_name = Activity.query.filter(Activity.name == name, Activity.id != activity.id).first()
@@ -124,13 +125,14 @@ def update_activities(activity_id):
         # Update only the fields that were passed in the request
         activity.name = name
         activity.description = description
-        activity.scheduled_time = scheduled_time  # Store time as string (HH:MM)
+        activity.scheduled_time = scheduled_time  # Now it's a string (HH:MM)
         activity.trip_id = trip_id
 
         db.session.commit()
         return jsonify({"success": "Updated successfully"}), 200
     else:
         return jsonify({"error": "Activity not found"}), 404
+
 
 
 # Delete Activities

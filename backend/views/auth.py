@@ -51,5 +51,5 @@ def logout():
     now = datetime.now(timezone.utc)
     db.session.add(TokenBlocklist(jti=jti, created_at=now))
     db.session.commit()
-    return jsonify({"success ":"Logged out successfully"})
+    return jsonify({"success":"Logged out successfully"})
 
