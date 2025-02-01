@@ -246,7 +246,7 @@ export const TripProvider = ({ children }) => {
 // Delete
     const deleteTrip = (id) => {
         toast.loading("Deleting trip...");
-        fetch(`https://travel-planner-vlgr.onrender.com/${id}`, {
+        fetch(`https://travel-planner-vlgr.onrender.com/trips/${id}`, {
             method: "DELETE",
             headers: {
                 'Content-type': 'application/json',
